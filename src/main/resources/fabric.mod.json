@@ -1,0 +1,48 @@
+{
+	"schemaVersion": 1,
+	"id": "tiny-inv-tweaks",
+	"version": "${version}",
+	"name": "Tiny Inv Tweaks",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/tiny-inv-tweaks/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "rasp.tit.TinyInvTweaks",
+				"adapter": "kotlin"
+			}
+		],
+		"client": [
+			{
+				"value": "rasp.tit.TinyInvTweaksClient",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"tiny-inv-tweaks.mixins.json",
+		{
+			"config": "tiny-inv-tweaks.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

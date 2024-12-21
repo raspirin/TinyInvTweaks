@@ -40,7 +40,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         Logger logger = TinyInvTweaksConst.INSTANCE.getLogger();
-        logger.info("mouse clicked hit!");
+        logger.info("key pressed hit!");
         InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromKeyEvent();
         Option<Boolean> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
         boolean earlyReturn = tinyInvTweaks$processActionResult(result, cir);

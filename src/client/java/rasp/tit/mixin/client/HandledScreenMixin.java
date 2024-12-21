@@ -31,8 +31,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         logger.info("mouse clicked hit!");
         InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromMouseEvent(button);
         Option<Boolean> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
-        tinyInvTweaks$processActionResult(result, cir);
-        if (!cir.getReturnValue()) {
+        boolean earlyReturn = tinyInvTweaks$processActionResult(result, cir);
+        if (earlyReturn && !cir.getReturnValue()) {
             logger.warn("mixin(mouseClicked) will cancel the method and return false.");
         }
     }
@@ -43,17 +43,19 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         logger.info("mouse clicked hit!");
         InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromKeyEvent();
         Option<Boolean> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
-        tinyInvTweaks$processActionResult(result, cir);
-        if (!cir.getReturnValue()) {
+        boolean earlyReturn = tinyInvTweaks$processActionResult(result, cir);
+        if (earlyReturn && !cir.getReturnValue()) {
             logger.warn("mixin(keyPressed) will cancel the method and return false.");
         }
     }
 
     @Unique
-    private <R> void tinyInvTweaks$processActionResult(@NotNull Option<R> result, CallbackInfoReturnable<R> cir) {
+    private <R> boolean tinyInvTweaks$processActionResult(@NotNull Option<R> result, CallbackInfoReturnable<R> cir) {
         if (result.isSome()) {
             R ret = result.getOrNull();
             cir.setReturnValue(ret);
+            return true;
         }
+        return false;
     }
 }

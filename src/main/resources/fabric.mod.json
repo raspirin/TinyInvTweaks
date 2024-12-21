@@ -3,15 +3,15 @@
 	"id": "tiny-inv-tweaks",
 	"version": "${version}",
 	"name": "Tiny Inv Tweaks",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Tiny Inv Tweaks",
 	"authors": [
-		"Me!"
+		"Rasp"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/raspirin/TinyInvTweaks",
+		"sources": "https://github.com/raspirin/TinyInvTweaks"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/tiny-inv-tweaks/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -41,8 +41,5 @@
 		"java": ">=17",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }

@@ -1,7 +1,8 @@
 package rasp.tit.action
 
 object InvTweaksActionFactory {
-    public fun fromMouseEvent(): InvTweaksAction {
+    public fun fromMouseEvent(button: Int): InvTweaksAction {
+
         return InvTweaksAction(InvTweaksActionType.MoveAll, InvTweaksActionDirection.Upwards)
     }
 

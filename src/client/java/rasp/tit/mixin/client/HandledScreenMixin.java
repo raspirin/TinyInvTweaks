@@ -29,9 +29,9 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     private void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         Logger logger = TinyInvTweaksConst.INSTANCE.getLogger();
         logger.info("mouse clicked hit!");
-        InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromMouseEvent();
-        Pair<Boolean, Option<Boolean>> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
-        processActionResult(result, cir);
+        InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromMouseEvent(button);
+        Option<Boolean> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
+        tinyInvTweaks$processActionResult(result, cir);
         if (!cir.getReturnValue()) {
             logger.warn("mixin(mouseClicked) will cancel the method and return false.");
         }
@@ -42,20 +42,17 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         Logger logger = TinyInvTweaksConst.INSTANCE.getLogger();
         logger.info("mouse clicked hit!");
         InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromKeyEvent();
-        Pair<Boolean, Option<Boolean>> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
-        processActionResult(result, cir);
+        Option<Boolean> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
+        tinyInvTweaks$processActionResult(result, cir);
         if (!cir.getReturnValue()) {
             logger.warn("mixin(keyPressed) will cancel the method and return false.");
         }
     }
 
     @Unique
-    private <R> void processActionResult(@NotNull Pair<Boolean, Option<R>> result, CallbackInfoReturnable<R> cir) {
-        boolean earlyReturn = result.component1();
-        Option<R> returnValue = result.component2();
-        if (earlyReturn) {
-            R ret = returnValue.getOrNull();
-            assert ret != null;
+    private <R> void tinyInvTweaks$processActionResult(@NotNull Option<R> result, CallbackInfoReturnable<R> cir) {
+        if (result.isSome()) {
+            R ret = result.getOrNull();
             cir.setReturnValue(ret);
         }
     }

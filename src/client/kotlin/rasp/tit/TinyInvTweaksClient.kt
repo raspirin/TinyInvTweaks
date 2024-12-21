@@ -16,9 +16,9 @@ object TinyInvTweaksClient : ClientModInitializer {
     /**
      * Execute the action.
      *
-     * @return The LHS indicates whether we should return early, and the RHS indicates the return value.
+     * @return Some(value) means we should return the value.
      */
-    public fun executeAction(action: InvTweaksAction): Pair<Boolean, Option<Boolean>> {
-        return Pair(false, none())
+    public fun executeAction(action: InvTweaksAction): Option<Boolean> {
+        return none()
     }
 }

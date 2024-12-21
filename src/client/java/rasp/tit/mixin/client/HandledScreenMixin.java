@@ -7,6 +7,8 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,39 +26,37 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void mouseClickedHook(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        TinyInvTweaksConst.INSTANCE.getLogger().info("mouse clicked hit!");
+    private void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        Logger logger = TinyInvTweaksConst.INSTANCE.getLogger();
+        logger.info("mouse clicked hit!");
         InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromMouseEvent();
-        Pair<Boolean, Boolean> result = executeAction(action);
-        if (result.component1()) {
-            boolean rt = result.component2();
-            cir.setReturnValue(rt);
-            TinyInvTweaksConst.INSTANCE.getLogger().info("return value: {}", rt);
+        Pair<Boolean, Option<Boolean>> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
+        processActionResult(result, cir);
+        if (!cir.getReturnValue()) {
+            logger.warn("mixin(mouseClicked) will cancel the method and return false.");
         }
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void keyPressedHook(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
-        TinyInvTweaksConst.INSTANCE.getLogger().info("key pressed hit!");
+    private void keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        Logger logger = TinyInvTweaksConst.INSTANCE.getLogger();
+        logger.info("mouse clicked hit!");
         InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromKeyEvent();
-        Pair<Boolean, Boolean> result = executeAction(action);
-        if (result.component1()) {
-            boolean rt = result.component2();
-            cir.setReturnValue(rt);
-            TinyInvTweaksConst.INSTANCE.getLogger().info("return value: {}", rt);
+        Pair<Boolean, Option<Boolean>> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
+        processActionResult(result, cir);
+        if (!cir.getReturnValue()) {
+            logger.warn("mixin(keyPressed) will cancel the method and return false.");
         }
     }
 
     @Unique
-    private Pair<Boolean, Boolean> executeAction(InvTweaksAction action) {
-        Option<Boolean> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
-        if (result.isNone()) {
-            // we have nothing to do with this case
-            return new Pair<>(false, true);
-        } else {
-            Boolean unwrapped = result.getOrNull();
-            assert unwrapped != null;
-            return new Pair<>(true, unwrapped);
+    private <R> void processActionResult(@NotNull Pair<Boolean, Option<R>> result, CallbackInfoReturnable<R> cir) {
+        boolean earlyReturn = result.component1();
+        Option<R> returnValue = result.component2();
+        if (earlyReturn) {
+            R ret = returnValue.getOrNull();
+            assert ret != null;
+            cir.setReturnValue(ret);
         }
     }
 }

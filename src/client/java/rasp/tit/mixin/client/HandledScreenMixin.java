@@ -6,10 +6,13 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,6 +24,9 @@ import rasp.tit.action.InvTweaksActionFactory;
 
 @Mixin(HandledScreen.class)
 public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {
+    @Shadow
+    protected abstract @Nullable Slot getSlotAt(double x, double y);
+
     protected HandledScreenMixin(Text title) {
         super(title);
     }
@@ -29,7 +35,13 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     private void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         Logger logger = TinyInvTweaksConst.INSTANCE.getLogger();
         logger.info("mouse clicked hit!");
-        InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromMouseEvent(button);
+
+        Slot slot = this.getSlotAt(mouseX, mouseY);
+        if (slot == null) {
+            return;
+        }
+
+        InvTweaksAction action = InvTweaksActionFactory.INSTANCE.fromMouseEvent(button, slot);
         Option<Boolean> result = TinyInvTweaksClient.INSTANCE.executeAction(action);
         boolean earlyReturn = tinyInvTweaks$processActionResult(result, cir);
         if (earlyReturn && !cir.getReturnValue()) {
